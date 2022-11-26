@@ -106,13 +106,6 @@ def p_field_condition_empty(p):
     p[0] = []
 
 
-def p_key_value_pair_tail_empty(p):
-    '''
-    key_value_pair_tail : empty
-    '''
-    p[0] = p[0]
-
-
 def p_key_value_pair_tail_tail(p):
     '''
     key_value_pair_tail : COMMA key_value_pair key_value_pair_tail
@@ -121,6 +114,13 @@ def p_key_value_pair_tail_tail(p):
         p[0] = [p[2]]
     else:
         p[0] = [p[2], *p[3]]
+
+
+def p_key_value_pair_tail_empty(p):
+    '''
+    key_value_pair_tail : empty
+    '''
+    p[0] = p[0]
 
 
 def p_key_value_pair(p):
@@ -199,7 +199,6 @@ parser = yacc()
 
 
 def parse(str):
-    errMessage = ""
     try:
         r = parser.parse(str)
         r["status"] = "success"

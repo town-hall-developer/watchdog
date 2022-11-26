@@ -1,7 +1,10 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+
+from get_data import query
 from parser import parse
 from pydantic import BaseModel
+
 # from app.recommend.routes import recommend_router
 
 app = FastAPI()
@@ -17,9 +20,16 @@ app.add_middleware(
     allow_headers=["*"]
 )
 
+
 class BasicRequest(BaseModel):
     query: str
+
 
 @app.post("/parse")
 def health_check(request: BasicRequest):
     return parse(request.query)
+
+
+@app.post("/query")
+def health_check(request: BasicRequest):
+    return query(request.query)
