@@ -2,7 +2,7 @@ CREATE TABLE `log`
 (
     `id`          int NOT NULL AUTO_INCREMENT,
     `datasource`  varchar(500) DEFAULT NULL,
-    `timestamp`   bigint(13) DEFAULT NULL,
+    `timestamp`   datetime DEFAULT NULL,
     `remote_addr` varchar(500) DEFAULT NULL,
     `path`        varchar(500) DEFAULT NULL,
     `status`      varchar(500) DEFAULT NULL,

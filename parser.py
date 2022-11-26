@@ -1,4 +1,5 @@
-from exception import DateTimeFormatException, InvalidFunctionException, InvalidDatasourceException
+from exception import DateTimeFormatException, InvalidFunctionException, InvalidDatasourceException, SyntaxException, \
+    TokenizeException
 from ply.lex import lex
 
 # --- Tokenizer
@@ -39,6 +40,11 @@ t_R_SQUARE_BRACKET = r'\]'
 t_EQUAL = r'='
 t_BANG = r'!'
 t_TILDE = r'~'
+
+
+def t_error(t):
+    raise TokenizeException(f"TokenizeException: Illegal character '{t.value[0]}'")
+
 
 lexer = lex()
 
@@ -184,6 +190,10 @@ def p_empty(p):
     pass
 
 
+def p_error(p):
+    raise SyntaxException(f'SyntaxException: Syntax error at {p.value!r}')
+
+
 # Build the parser
 parser = yacc()
 
@@ -194,7 +204,8 @@ def parse(str):
         r = parser.parse(str)
         r["status"] = "success"
         return r
-    except (DateTimeFormatException, InvalidDatasourceException, InvalidFunctionException) as e:
+    except (DateTimeFormatException, InvalidDatasourceException, InvalidFunctionException,
+            SyntaxException, TokenizeException,) as e:
         return {
             "status": "fail",
             "error": e.message
