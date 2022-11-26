@@ -15,4 +15,4 @@ CREATE TABLE `log`
     PRIMARY KEY (`id`),
     KEY           `idx_datasource_timestamp` (`datasource`,`timestamp`) USING BTREE,
     KEY           `idx_timestamp` (`timestamp`) USING BTREE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB;
