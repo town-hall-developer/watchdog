@@ -1,14 +1,27 @@
+from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
+from parser import parse
+from pydantic import BaseModel
+# from app.recommend.routes import recommend_router
 
+app = FastAPI()
+# app.include_router(recommend_router)
 
-# Test it out
-from parser import print_tokens, parse
+origins = ["*"]
 
-# data = 'max'
-#
-# print_tokens(data)
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=origins,
+    allow_credentials=False,
+    allow_methods=["*"],
+    allow_headers=["*"]
+)
 
+class BasicRequest(BaseModel):
+    query: str
 
-time = '23:12:76'
-date = '2022-09-10'
-datetime = '1234-56-78 98:76:54'
-print_tokens(datetime)
+@app.post("/parse")
+def health_check(request: BasicRequest):
+    return {
+        "msg": "Health check"
+    }
