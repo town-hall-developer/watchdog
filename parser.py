@@ -76,11 +76,50 @@ def p_condition(p):
 
 def p_field_condition(p):
     '''
-    field_condition : LBRACKET VARIABLE EQUAL VARIABLE RBRACKET
+    field_condition : LBRACKET key_value_pair key_value_pair_tail RBRACKET
+    '''
+    if p[3] == None:
+        p[0] = [p[2]]
+    else:
+        p[0] = [p[2], *p[3]]
+
+
+def p_empty(p):
+    'empty :'
+    pass
+
+
+def p_key_value_pair_tail_empty(p):
+    '''
+    key_value_pair_tail : empty
+    '''
+    p[0] = p[0]
+
+
+def p_key_value_pair_tail(p):
+    '''
+    key_value_pair_tail : COMMA key_value_pair
+    '''
+    p[0] = p[1]
+
+
+def p_key_value_pair_tail_tail(p):
+    '''
+    key_value_pair_tail : COMMA key_value_pair key_value_pair_tail
+    '''
+    if p[3] == None:
+        p[0] = [p[2]]
+    else:
+        p[0] = [p[2], *p[3]]
+
+
+def p_key_value_pair(p):
+    '''
+    key_value_pair : VARIABLE EQUAL VARIABLE
     '''
     p[0] = {
-        'key': p[2],
-        'value': p[4],
+        'key': p[1],
+        'value': p[3],
     }
 
 
@@ -117,6 +156,6 @@ def parse(str):
     print(r)
 
 
-datetime = 'find({statusCode=200}["2022-11-01 11:98:21", "2021-12-31 01:45:67"], nginx)'
+datetime = 'find({statusCode=200,abc=123,xyz=3}["2022-11-01 11:98:21", "2021-12-31 01:45:67"], nginx)'
 # print_tokens(datetime)
 parse(datetime)
