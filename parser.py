@@ -1,7 +1,9 @@
+from exception import DateTimeFormatException, InvalidFunctionException, InvalidDatasourceException
 from ply.lex import lex
 
 # --- Tokenizer
 from ply.yacc import yacc
+from utils import str_to_datetime
 
 tokens = (
     'VARIABLE',
@@ -57,6 +59,12 @@ def p_function(p):
     '''
     function : VARIABLE LPAREN condition COMMA VARIABLE RPAREN
     '''
+    if p[1] not in ('find', ):
+        raise InvalidFunctionException(f'InvalidFunctionException: Unknown function: {p[1]}')
+
+    if p[5] not in ('nginx', 'alb', ):
+        raise InvalidDatasourceException(f'InvalidDatasourceException: Unknown datasource: {p[5]}')
+
     p[0] = {
         'function': p[1],
         'condition': p[3],
@@ -137,6 +145,12 @@ def p_datetime(p):
     '''
     datetime : VARIABLE HYPHEN VARIABLE HYPHEN VARIABLE VARIABLE COLON VARIABLE COLON VARIABLE
     '''
+    try:
+        dt = str_to_datetime(f"{p[1]}-{p[3]}-{p[5]} {p[6]}:{p[8]}:{p[10]}")
+    except ValueError:
+        raise DateTimeFormatException(
+            f'DateTimeFormatException: Invalid datetime format. Expected format: "%Y-%m-%d %H:%M:%S". Actual input: {p[1]}-{p[3]}-{p[5]} {p[6]}:{p[8]}:{p[10]}')
+
     p[0] = {
         'year': p[1],
         'month': p[3],
@@ -152,5 +166,11 @@ parser = yacc()
 
 
 def parse(str):
-    r = parser.parse(str)
-    return r
+    errMessage = ""
+    try:
+        r = parser.parse(str)
+        return r
+    except Exception as e:
+        return {
+            "error": e.message
+        }
