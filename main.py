@@ -22,6 +22,4 @@ class BasicRequest(BaseModel):
 
 @app.post("/parse")
 def health_check(request: BasicRequest):
-    return {
-        "msg": "Health check"
-    }
+    return parse(request.query)
