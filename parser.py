@@ -55,11 +55,12 @@ def print_tokens(data):
 # --- Parser
 def p_function(p):
     '''
-    function : VARIABLE LPAREN condition RPAREN
+    function : VARIABLE LPAREN condition COMMA VARIABLE RPAREN
     '''
     p[0] = {
         'function': p[1],
         'condition': p[3],
+        'datasource': p[5],
     }
 
 
@@ -95,15 +96,15 @@ def p_date_condition(p):
 
 def p_datetime(p):
     '''
-    datetime : VARIABLE HYPHEN VARIABLE HYPHEN VARIABLE DATETIME_SEPERATOR VARIABLE COLON VARIABLE COLON VARIABLE
+    datetime : VARIABLE HYPHEN VARIABLE HYPHEN VARIABLE VARIABLE COLON VARIABLE COLON VARIABLE
     '''
     p[0] = {
         'year': p[1],
         'month': p[3],
         'day': p[5],
-        'hour': p[7],
-        'minute': p[9],
-        'second': p[11],
+        'hour': p[6],
+        'minute': p[8],
+        'second': p[10],
     }
 
 
@@ -116,6 +117,6 @@ def parse(str):
     print(r)
 
 
-datetime = 'find({statusCode=200}["2022-11-01@11:98:21", "2021-12-31@01:45:67"])'
+datetime = 'find({statusCode=200}["2022-11-01 11:98:21", "2021-12-31 01:45:67"], nginx)'
 # print_tokens(datetime)
 parse(datetime)
