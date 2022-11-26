@@ -18,14 +18,14 @@ tokens = (
     'L_SQUARE_BRACKET',
     'R_SQUARE_BRACKET',
     'EQUAL',
-
-    'DATETIME_SEPERATOR',
+    'BANG',
+    'TILDE',
 )
 
 # A string containing ignored characters (spaces and tabs)
 t_ignore = ' \t'
 
-t_VARIABLE = r'[a-zA-Z0-9_]+'
+t_VARIABLE = r'[a-zA-Z0-9_.]+'
 t_HYPHEN = r'-'
 t_COLON = r':'
 t_COMMA = r','
@@ -37,7 +37,8 @@ t_RBRACKET = r'\}'
 t_L_SQUARE_BRACKET = r'\['
 t_R_SQUARE_BRACKET = r'\]'
 t_EQUAL = r'='
-t_DATETIME_SEPERATOR = r'@'
+t_BANG = r'!'
+t_TILDE = r'~'
 
 lexer = lex()
 
@@ -59,10 +60,10 @@ def p_function(p):
     '''
     function : VARIABLE LPAREN condition COMMA VARIABLE RPAREN
     '''
-    if p[1] not in ('find', ):
+    if p[1] not in ('find',):
         raise InvalidFunctionException(f'InvalidFunctionException: Unknown function: {p[1]}')
 
-    if p[5] not in ('nginx', 'alb', ):
+    if p[5] not in ('nginx', 'alb', 'all',):
         raise InvalidDatasourceException(f'InvalidDatasourceException: Unknown datasource: {p[5]}')
 
     p[0] = {
@@ -123,12 +124,34 @@ def p_key_value_pair_tail_tail(p):
 
 def p_key_value_pair(p):
     '''
-    key_value_pair : VARIABLE EQUAL VARIABLE
+    key_value_pair : VARIABLE operator VARIABLE
     '''
     p[0] = {
         'key': p[1],
+        'operator': p[2],
         'value': p[3],
     }
+
+
+def p_operator_equal(p):
+    '''
+    operator : EQUAL
+    '''
+    p[0] = p[1]
+
+
+def p_operator_not_equal(p):
+    '''
+    operator : BANG EQUAL
+    '''
+    p[0] = f"{p[1]}{p[2]}"
+
+
+def p_operator_contains(p):
+    '''
+    operator : TILDE EQUAL
+    '''
+    p[0] = f"{p[1]}{p[2]}"
 
 
 def p_date_condition(p):
