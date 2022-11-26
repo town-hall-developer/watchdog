@@ -4,13 +4,13 @@
 function : VARIABLE LPAREN condition COMMA VARIABLE RPAREN
 condition : field_condition date_condition
 field_condition : LBRACKET key_value_pair key_value_pair_tail RBRACKET
-key_value_pair_tail : empty
-key_value_pair_tail : COMMA key_value_pair
-key_value_pair_tail : COMMA key_value_pair key_value_pair_tail
+field_condition : empty
 key_value_pair : VARIABLE operator VARIABLE
 operator : EQUAL
 operator : BANG EQUAL
 operator : TILDE EQUAL
+key_value_pair_tail : empty
+key_value_pair_tail : COMMA key_value_pair key_value_pair_tail
 date_condition : L_SQUARE_BRACKET QUOTE datetime QUOTE COMMA QUOTE datetime QUOTE R_SQUARE_BRACKET 
 datetime : VARIABLE HYPHEN VARIABLE HYPHEN VARIABLE VARIABLE COLON VARIABLE COLON VARIABLE
 ```

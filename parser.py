@@ -93,9 +93,11 @@ def p_field_condition(p):
         p[0] = [p[2], *p[3]]
 
 
-def p_empty(p):
-    'empty :'
-    pass
+def p_field_condition_empty(p):
+    '''
+    field_condition : empty
+    '''
+    p[0] = []
 
 
 def p_key_value_pair_tail_empty(p):
@@ -103,13 +105,6 @@ def p_key_value_pair_tail_empty(p):
     key_value_pair_tail : empty
     '''
     p[0] = p[0]
-
-
-def p_key_value_pair_tail(p):
-    '''
-    key_value_pair_tail : COMMA key_value_pair
-    '''
-    p[0] = p[1]
 
 
 def p_key_value_pair_tail_tail(p):
@@ -184,6 +179,11 @@ def p_datetime(p):
     }
 
 
+def p_empty(p):
+    'empty :'
+    pass
+
+
 # Build the parser
 parser = yacc()
 
@@ -194,8 +194,13 @@ def parse(str):
         r = parser.parse(str)
         r["status"] = "success"
         return r
-    except Exception as e:
+    except (DateTimeFormatException, InvalidDatasourceException, InvalidFunctionException) as e:
         return {
             "status": "fail",
             "error": e.message
+        }
+    except Exception as e:
+        return {
+            "status": "fail",
+            "error": f"Syntax Error: Actual input: {str}"
         }
