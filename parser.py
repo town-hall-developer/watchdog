@@ -169,8 +169,10 @@ def parse(str):
     errMessage = ""
     try:
         r = parser.parse(str)
+        r["status"] = "success"
         return r
     except Exception as e:
         return {
+            "status": "fail",
             "error": e.message
         }
