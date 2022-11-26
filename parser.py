@@ -153,9 +153,4 @@ parser = yacc()
 
 def parse(str):
     r = parser.parse(str)
-    print(r)
-
-
-datetime = 'find({statusCode=200,abc=123,xyz=3}["2022-11-01 11:98:21", "2021-12-31 01:45:67"], nginx)'
-# print_tokens(datetime)
-parse(datetime)
+    return r
