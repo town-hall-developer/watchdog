@@ -1,3 +1,5 @@
+# Parser
+
 ## Grammars
 
 ```
@@ -18,12 +20,16 @@ datetime : VARIABLE HYPHEN VARIABLE HYPHEN VARIABLE VARIABLE COLON VARIABLE COLO
 
 ### Examples
 
-find({statusCode="200"}["2022-11-01T11:00:00", "2022-11-01T11:05:00"], nginx)
+find({status=200}["2022-11-01T11:00:00", "2022-11-01T11:05:00"], nginx)
 
-find({statusCode=~"200"}["2022-11-01T11:00:00", "2022-11-01T11:05:00"], alb)
+find({status!~=200}["2022-11-01T11:00:00", "2022-11-01T11:05:00"], alb)
 
 
 
-TODO:
+# Cron
 
-- 없는 필드 처리
+## How to run
+
+```bash
+python main_cron.py
+```

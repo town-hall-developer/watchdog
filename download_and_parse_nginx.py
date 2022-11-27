@@ -100,7 +100,7 @@ def save_to_db(nginx_log):
 def run():
     total = list_objects(ALB_BUCKET_NAME)
     object_list = set(total) - set(get_already_stored())
-    print(object_list)
+    print(f"nginx: {object_list}")
 
     for object_name in object_list:
         if '.gz' not in object_name or 'access' not in object_name:
@@ -120,4 +120,3 @@ def get_already_stored():
     return list(map(lambda x: x['nginx_log_file_name'], r))
 
 
-run()
