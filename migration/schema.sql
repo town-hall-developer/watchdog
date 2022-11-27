@@ -1,4 +1,4 @@
-CREATE TABLE `log`
+CREATE TABLE `log_tb`
 (
     `id`          int NOT NULL AUTO_INCREMENT,
     `datasource`  varchar(500) DEFAULT NULL,

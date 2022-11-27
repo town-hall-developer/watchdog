@@ -35,7 +35,7 @@ def query(str):
     if datasource != 'all':
         where += f" AND datasource='{datasource}'"
 
-    sql = f"SELECT * FROM log {where}"
+    sql = f"SELECT * FROM log_tb {where}"
 
     result = fetchall(sql)
     return result
