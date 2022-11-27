@@ -26,7 +26,7 @@ tokens = (
 # A string containing ignored characters (spaces and tabs)
 t_ignore = ' \t'
 
-t_VARIABLE = r'[a-zA-Z0-9_.]+'
+t_VARIABLE = r'[a-zA-Z0-9_./]+'
 t_HYPHEN = r'-'
 t_COLON = r':'
 t_COMMA = r','
