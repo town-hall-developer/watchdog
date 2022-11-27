@@ -16,3 +16,9 @@ CREATE INDEX `idx_timestamp` ON log_tb (`timestamp`);
 
 ALTER TABLE log_tb
 ADD COLUMN `type` varchar(30) DEFAULT NULL AFTER datasource;
+
+ALTER TABLE log_tb
+MODIFY COLUMN `path` text DEFAULT NULL;
+
+ALTER TABLE log_tb
+MODIFY COLUMN `user_agent` text DEFAULT NULL;

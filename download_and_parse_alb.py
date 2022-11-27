@@ -8,9 +8,9 @@ import boto3
 import gzip
 import re
 
-from db import insert
+from db import insert, fetchall
 
-BUCKET_NAME = 'townhall-alb-bucket'
+ALB_BUCKET_NAME = 'townhall-alb-bucket'
 
 
 def download_and_parse(object_name):
@@ -18,7 +18,7 @@ def download_and_parse(object_name):
     print(object_name)
     file_name = object_name.split('/')[-1]
     s3 = boto3.client('s3')
-    s3.download_file(BUCKET_NAME, object_name, file_name)
+    s3.download_file(ALB_BUCKET_NAME, object_name, file_name)
 
     fields = ["type",
               "time",
@@ -62,6 +62,8 @@ def download_and_parse(object_name):
         lines = log.readlines()
         for line in lines:
             line = line.decode('utf-8')
+            if 'health' in line:
+                continue
 
             line_split = re.split(regex, line)
             line_split = line_split[1:len(line_split) - 1]
@@ -93,7 +95,11 @@ def save_to_db(alb_log):
     insert(sql)
 
 
-def run(object_list):
+def run():
+
+    total = list_objects(ALB_BUCKET_NAME)
+    object_list = set(total) - set(get_already_stored())
+
     for object_name in object_list:
         if '.gz' not in object_name:
             continue
@@ -104,8 +110,12 @@ def run(object_list):
         sql = f'INSERT INTO `alb_log_file_tb` (`alb_log_file_name`) VALUES ("{object_name}")'
         insert(sql)
 
-# obj_name = 'AWSLogs/864493117148/elasticloadbalancing/ap-northeast-2/2022/11/26/864493117148_elasticloadbalancing_ap-northeast-2_app.townhall-lb.5fdaeebaccf886b1_20221126T1220Z_15.165.110.75_2vgwten3.log.gz'
-#
-# # run([obj_name])
-#
-# run(list_objects(BUCKET_NAME))
+
+
+def get_already_stored():
+    sql = 'SELECT alb_log_file_name FROM alb_log_file_tb'
+    r = fetchall(sql)
+    return list(map(lambda x: x['alb_log_file_name'], r))
+
+
+run()
