@@ -17,7 +17,7 @@ def query(str):
     end_date_condition = date_condition.get('end')
     end = f"{end_date_condition.get('year')}-{end_date_condition.get('month')}-{end_date_condition.get('day')} {end_date_condition.get('hour')}:{end_date_condition.get('minute')}:{end_date_condition.get('second')}"
 
-    where += f"timestamp >= '{start}' AND timestamp <= '{end}'"
+    where += f"`timestamp` >= '{start}' AND `timestamp` <= '{end}'"
 
     # -- Field condition
     field_condition = condition.get('field')
@@ -27,15 +27,17 @@ def query(str):
         value = f.get('value')
 
         if operator == "~=":
-            where += f" AND {field} LIKE '%{value}%'"
+            where += f" AND `{field}` LIKE '%{value}%'"
         else:
-            where += f" AND {field} {operator} {value}"
+            where += f" AND `{field}` {operator} '{value}'"
 
     datasource = r.get("datasource")
     if datasource != 'all':
         where += f" AND datasource='{datasource}'"
 
-    sql = f"SELECT * FROM log_tb {where}"
+    sql = f"SELECT * FROM `log_tb` {where}"
+
+    print(sql)
 
     result = fetchall(sql)
     return result
