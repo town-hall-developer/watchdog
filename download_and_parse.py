@@ -6,13 +6,14 @@ import gzip
 import re
 
 BUCKET_NAME = 'townhall-alb-bucket'
-OBJECT_NAME = 'AWSLogs/864493117148/elasticloadbalancing/ap-northeast-2/2022/11/27/864493117148_elasticloadbalancing_ap-northeast-2_app.townhall-lb.5fdaeebaccf886b1_20221127T1040Z_15.165.110.75_3gubphx9.log.gz'
 
 
-def download_and_parse(bucket_name, object_name):
-    file_name = OBJECT_NAME.split('/')[-1]
+def download_and_parse(object_name):
+    print("processing...")
+    print(object_name)
+    file_name = object_name.split('/')[-1]
     s3 = boto3.client('s3')
-    s3.download_file(BUCKET_NAME, OBJECT_NAME, file_name)
+    s3.download_file(BUCKET_NAME, object_name, file_name)
 
     fields = ["type",
               "time",
@@ -70,4 +71,18 @@ def download_and_parse(bucket_name, object_name):
     return resultArray
 
 
-# print(parse_log_file(BUCKET_NAME, OBJECT_NAME))
+def list_objects(bucket_name):
+    s3 = boto3.client('s3')
+    response = s3.list_objects_v2(Bucket=bucket_name)
+    return list(map(lambda obj: obj['Key'], response['Contents']))
+
+
+# 아래와 같이 사용하면 됩니다.
+#
+# objs = list_objects(BUCKET_NAME)
+# data = []
+# for obj in objs:
+#     if ".gz" not in obj:
+#         continue
+#     data.extend(download_and_parse(obj))
+
