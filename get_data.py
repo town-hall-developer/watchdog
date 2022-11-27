@@ -28,6 +28,8 @@ def query(str):
 
         if operator == "~=":
             where += f" AND `{field}` LIKE '%{value}%'"
+        elif operator == "!~=":
+            where += f" AND `{field}` NOT LIKE '%{value}%'"
         else:
             where += f" AND `{field}` {operator} '{value}'"
 

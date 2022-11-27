@@ -155,6 +155,13 @@ def p_operator_contains(p):
     p[0] = f"{p[1]}{p[2]}"
 
 
+def p_operator_not_contains(p):
+    '''
+    operator : BANG TILDE EQUAL
+    '''
+    p[0] = f"{p[1]}{p[2]}{p[3]}"
+
+
 def p_date_condition(p):
     '''
     date_condition : L_SQUARE_BRACKET QUOTE datetime QUOTE COMMA QUOTE datetime QUOTE R_SQUARE_BRACKET
