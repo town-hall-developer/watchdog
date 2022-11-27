@@ -1,5 +1,16 @@
 # Parser
 
+## How to run
+
+```bash
+uvicorn main:app --reload --port 8000
+```
+
+## Endpoint
+
+- /parse
+- /query
+
 ## Grammars
 
 ```
@@ -25,6 +36,13 @@ find({status=200}["2022-11-01T11:00:00", "2022-11-01T11:05:00"], nginx)
 find({status!~=200}["2022-11-01T11:00:00", "2022-11-01T11:05:00"], alb)
 
 
+## Environments
+
+- WATCHDOG_DATABASE_HOST
+- WATCHDOG_DATABASE_USER
+- WATCHDOG_DATABASE_PASSWORD
+- WATCHDOG_DATABASE_NAME
+- WATCHDOG_DATABASE_PORT
 
 # Cron
 
@@ -33,3 +51,15 @@ find({status!~=200}["2022-11-01T11:00:00", "2022-11-01T11:05:00"], alb)
 ```bash
 python main_cron.py
 ```
+
+## Environments
+
+- WATCHDOG_DATABASE_HOST
+- WATCHDOG_DATABASE_USER
+- WATCHDOG_DATABASE_PASSWORD
+- WATCHDOG_DATABASE_NAME
+- WATCHDOG_DATABASE_PORT
+- AWS_DEFAULT_REGION
+- AWS_ACCESS_KEY_ID
+- AWS_SECRET_ACCESS_KEY
+- AWS_ACCOUNT_ID
