@@ -58,6 +58,19 @@ def fetchall(sql):
     connection.close()
 
 
+def insert(sql):
+    logging.info(sql)
+    connection = open_connection()
+
+    try:
+        with connection.cursor() as cursor:
+            cursor.execute(sql)
+    except pymysql.Error as e:
+        logging.error(e)
+
+    connection.close()
+
+
 class Log:
     timestamp: int
     remote_addr: str
