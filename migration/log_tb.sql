@@ -13,3 +13,6 @@ CREATE TABLE `log_tb` (
 
 CREATE INDEX `idx_datasource_timestamp` ON log_tb (`datasource`, `timestamp`);
 CREATE INDEX `idx_timestamp` ON log_tb (`timestamp`);
+
+ALTER TABLE log_tb
+ADD COLUMN `type` varchar(30) DEFAULT NULL AFTER datasource;
