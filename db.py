@@ -3,10 +3,10 @@ import os
 
 import pymysql.cursors
 
-host = os.getenv('WATCHDOG_DATABASE_HOST', '')
-user = os.getenv('WATCHDOG_DATABASE_USER', '')
-password = os.getenv('WATCHDOG_DATABASE_PASSWORD', '')
-database = os.getenv('WATCHDOG_DATABASE_NAME', '')
+host = os.getenv('WATCHDOG_DATABASE_HOST', 'dev.townhall.place')
+user = os.getenv('WATCHDOG_DATABASE_USER', 'admin')
+password = os.getenv('WATCHDOG_DATABASE_PASSWORD', '3d8JCwN@h48x')
+database = os.getenv('WATCHDOG_DATABASE_NAME', 'watchdog')
 port = os.getenv('WATCHDOG_DATABASE_PORT', '3306')
 
 if host is None or \
@@ -65,6 +65,20 @@ def insert(sql):
     try:
         with connection.cursor() as cursor:
             cursor.execute(sql)
+    except pymysql.Error as e:
+        logging.error(e)
+
+    connection.close()
+
+
+def update(list):
+    logging.info(list)
+    sql = f'UPDATE log_tb SET type = %s WHERE uuid = %s'
+    connection = open_connection()
+
+    try:
+        with connection.cursor() as cursor:
+            cursor.executemany(sql,list)
     except pymysql.Error as e:
         logging.error(e)
 
