@@ -37,7 +37,12 @@ def query(str):
     if datasource != 'all':
         where += f" AND datasource='{datasource}'"
 
-    sql = f"SELECT * FROM `log_tb` {where}"
+    function = r.get("function")
+    field = "*"
+    if function == "count":
+        field = "COUNT(*)"
+
+    sql = f"SELECT {field} FROM `log_tb` {where}"
 
     print(sql)
 

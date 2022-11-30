@@ -66,7 +66,7 @@ def p_function(p):
     '''
     function : VARIABLE LPAREN condition COMMA VARIABLE RPAREN
     '''
-    if p[1] not in ('find',):
+    if p[1] not in ('find', 'count'):
         raise InvalidFunctionException(f'InvalidFunctionException: Unknown function: {p[1]}')
 
     if p[5] not in ('nginx', 'alb', 'all',):
