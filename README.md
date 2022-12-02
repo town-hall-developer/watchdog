@@ -31,9 +31,9 @@ datetime : VARIABLE HYPHEN VARIABLE HYPHEN VARIABLE VARIABLE COLON VARIABLE COLO
 
 ### Examples
 
-find({status=200}["2022-11-01T11:00:00", "2022-11-01T11:05:00"], nginx)
+find({status=200}["2022-11-01 11:00:00", "2022-11-01 11:05:00"], nginx)
 
-find({status!~=200}["2022-11-01T11:00:00", "2022-11-01T11:05:00"], alb)
+find({status!~=200}["2022-11-01 11:00:00", "2022-11-01 11:05:00"], alb)
 
 
 ## Environments
