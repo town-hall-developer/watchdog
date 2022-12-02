@@ -40,8 +40,22 @@ def def_value():
 # process_abnormal('2022-11-27 00:00:00', '2022-11-28 23:59:59')
 
 
-def get_null_type_log():
-    sql = "SELECT * FROM log_tb WHERE type IS NULL"
+def analysis_abnormal():
+
+    nignx_time_sql = "SELECT * FROM log_tb WHERE datasource='nginx' ORDER BY timestamp DESC LIMIT 1"
+    nginx_log = fetchall(nignx_time_sql)
+    nginx_recent_time = nginx_log[0]['timestamp']
+
+    alb_time_sql = "SELECT * FROM log_tb WHERE datasource='alb' ORDER BY timestamp DESC LIMIT 1"
+    alb_log = fetchall(alb_time_sql)
+    alb_recent_time = alb_log[0]['timestamp']
+
+    time_stamp_limit = alb_recent_time if (nginx_recent_time > alb_recent_time) else nginx_recent_time
+
+    print(time_stamp_limit)
+
+
+    sql = f'SELECT * FROM log_tb WHERE type IS NULL AND timestamp < "{time_stamp_limit}"'
     null_type_log = fetchall(sql)
     log_dict = key_select(null_type_log)
 
@@ -153,4 +167,4 @@ def key_generate(log):
     return key
 
 
-get_null_type_log()
+analysis_abnormal()
