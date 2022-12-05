@@ -80,8 +80,17 @@ def download_and_parse(object_name):
 
 def list_objects(bucket_name):
     s3 = boto3.client('s3')
-    response = s3.list_objects_v2(Bucket=bucket_name)
-    return list(map(lambda obj: obj['Key'], response['Contents']))
+    # Create a reusable Paginator
+    paginator = s3.get_paginator('list_objects_v2')
+
+    # Create a PageIterator from the Paginator
+    page_iterator = paginator.paginate(Bucket=bucket_name)
+
+    re = []
+    for page in page_iterator:
+        re.append(list(map(lambda obj: obj['Key'], page['Contents'])))
+
+    return re
 
 
 def save_to_db(alb_log):
@@ -117,4 +126,3 @@ def get_already_stored():
     sql = 'SELECT alb_log_file_name FROM alb_log_file_tb'
     r = fetchall(sql)
     return list(map(lambda x: x['alb_log_file_name'], r))
-
