@@ -19,13 +19,13 @@ class InvalidFunctionException(Exception):
         super().__init__(self.message)
 
 
-class SyntaxException(Exception):
+class SyntaxError(Exception):
     def __init__(self, message):
         self.message = message
         super().__init__(self.message)
 
 
-class TokenizeException(Exception):
+class TokenizeError(Exception):
     def __init__(self, message):
         self.message = message
         super().__init__(self.message)

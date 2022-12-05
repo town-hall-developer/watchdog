@@ -1,5 +1,5 @@
-from exception import DateTimeFormatException, InvalidFunctionException, InvalidDatasourceException, SyntaxException, \
-    TokenizeException
+from exception import DateTimeFormatException, InvalidFunctionException, InvalidDatasourceException, SyntaxError, \
+    TokenizeError
 from ply.lex import lex
 
 # --- Tokenizer
@@ -43,7 +43,7 @@ t_TILDE = r'~'
 
 
 def t_error(t):
-    raise TokenizeException(f"TokenizeException: Illegal character '{t.value[0]}'")
+    raise TokenizeError(f"TokenizeError: Illegal character '{t.value[0]}'")
 
 
 lexer = lex()
@@ -66,11 +66,6 @@ def p_function(p):
     '''
     function : VARIABLE LPAREN condition COMMA VARIABLE RPAREN
     '''
-    if p[1] not in ('find', 'count'):
-        raise InvalidFunctionException(f'InvalidFunctionException: Unknown function: {p[1]}')
-
-    if p[5] not in ('nginx', 'alb', 'all',):
-        raise InvalidDatasourceException(f'InvalidDatasourceException: Unknown datasource: {p[5]}')
 
     p[0] = {
         'function': p[1],
@@ -176,11 +171,6 @@ def p_datetime(p):
     '''
     datetime : VARIABLE HYPHEN VARIABLE HYPHEN VARIABLE VARIABLE COLON VARIABLE COLON VARIABLE
     '''
-    try:
-        dt = str_to_datetime(f"{p[1]}-{p[3]}-{p[5]} {p[6]}:{p[8]}:{p[10]}")
-    except ValueError:
-        raise DateTimeFormatException(
-            f'DateTimeFormatException: Invalid datetime format. Expected format: "%Y-%m-%d %H:%M:%S". Actual input: {p[1]}-{p[3]}-{p[5]} {p[6]}:{p[8]}:{p[10]}')
 
     p[0] = {
         'year': p[1],
@@ -198,7 +188,7 @@ def p_empty(p):
 
 
 def p_error(p):
-    raise SyntaxException(f'SyntaxException: Syntax error at {p.value!r}')
+    raise SyntaxError(f'SyntaxException: Syntax error at {p.value!r}')
 
 
 # Build the parser
@@ -208,16 +198,74 @@ parser = yacc()
 def parse(str):
     try:
         r = parser.parse(str)
-        r["status"] = "success"
-        return r
-    except (DateTimeFormatException, InvalidDatasourceException, InvalidFunctionException,
-            SyntaxException, TokenizeException,) as e:
+    except (SyntaxError, TokenizeError,) as e:
         return {
             "status": "fail",
-            "error": e.message
+            "errors": [{
+                "error": e.message
+            }]
         }
     except Exception as e:
         return {
             "status": "fail",
-            "error": f"Syntax Error: Actual input: {str}"
+            "errors": [{
+                "error": f"SyntaxError: Your input: {str}"}]
         }
+
+    errs = errors(r)
+    if len(errs) == 0:
+        r["status"] = "success"
+        return r
+    else:
+        return {
+            "status": "fail",
+            "errors": errs
+        }
+
+
+def errors(parseTree):
+    errors = []
+
+    function = parseTree.get("function")
+
+    if function not in ('find', 'count'):
+        errors.append({
+            "error": f"InvalidFunctionException: Unknown function: {function}"
+        })
+
+    datasource = parseTree.get("datasource")
+    if datasource not in ('nginx', 'alb', 'all',):
+        errors.append({
+            "error": f"InvalidDatasourceException: Unknown datasource: {datasource}"
+        })
+
+    start = parseTree.get("condition").get("date").get("start")
+
+    isStart = False
+    isEnd = False
+    try:
+        startDt = str_to_datetime(
+            f"{start.get('year')}-{start.get('month')}-{start.get('day')} {start.get('hour')}:{start.get('minute')}:{start.get('second')}")
+        isStart = True
+    except Exception as e:
+        errors.append({
+            "error": f"DateTimeFormatException: Invalid start datetime format. Your input: {start.get('year')}-{start.get('month')}-{start.get('day')} {start.get('hour')}:{start.get('minute')}:{start.get('second')}"
+        })
+
+    end = parseTree.get("condition").get("date").get("end")
+    try:
+        endDt = str_to_datetime(
+            f"{end.get('year')}-{end.get('month')}-{end.get('day')} {end.get('hour')}:{end.get('minute')}:{end.get('second')}")
+        isEnd = True
+    except Exception as e:
+        errors.append({
+            "error": f"DateTimeFormatException: Invalid end datetime format. Your input: {end.get('year')}-{end.get('month')}-{end.get('day')} {end.get('hour')}:{end.get('minute')}:{end.get('second')}"
+        })
+
+    if (isStart and isEnd):
+        if endDt < startDt:
+            errors.append({
+                "error": f"DateTimeException: start datetime should be faster than the end datetime."
+            })
+
+    return errors
