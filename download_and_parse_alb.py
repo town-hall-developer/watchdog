@@ -88,7 +88,7 @@ def list_objects(bucket_name):
 
     re = []
     for page in page_iterator:
-        re.append(list(map(lambda obj: obj['Key'], page['Contents'])))
+        re.extend(list(map(lambda obj: obj['Key'], page['Contents'])))
 
     return re
 
@@ -105,10 +105,8 @@ def save_to_db(alb_log):
 
 
 def run():
-
     total = list_objects(ALB_BUCKET_NAME)
     object_list = set(total) - set(get_already_stored())
-    print(f"alb: {object_list}")
 
     for object_name in object_list:
         if '.gz' not in object_name:
